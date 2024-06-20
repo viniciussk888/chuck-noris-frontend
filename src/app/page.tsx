@@ -33,7 +33,7 @@ export default function Home() {
     } catch (error: any) {
       console.error(error);
     }
-  }
+  };
 
   useEffect(() => {
     fetchCategories();
