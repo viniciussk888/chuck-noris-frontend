@@ -6,5 +6,6 @@ export const request = axios.create({
   baseURL: url,
   headers: {
     'Content-Type': 'application/json',
+    'Accept-Language': 'pt',
   },
 });
