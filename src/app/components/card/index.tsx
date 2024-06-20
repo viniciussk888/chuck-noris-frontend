@@ -1,12 +1,11 @@
 /* eslint-disable @next/next/no-img-element */
 type CardProps = {
   joke: Joke;
-  col?: number;
 };
-export const Card = ({ joke, col }: CardProps) => {
+export const Card = ({ joke }: CardProps) => {
   return (
     <div
-      className={`justify-self-cente col-span-${col}  p-4 ml-2 w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-purple-800 dark:border-gray-700`}
+      className={`justify-self-cente p-4 ml-2 w-full max-w-sm bg-white border border-gray-200 rounded-lg shadow dark:bg-purple-800 dark:border-gray-700`}
     >
       <div className="flex flex-col items-center pb-10">
         <img

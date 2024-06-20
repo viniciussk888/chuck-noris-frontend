@@ -5,6 +5,7 @@ type SearchInputProps = {
   value: string;
   onChange: (value: string) => void;
   onSearch: () => void;
+  disabled?: boolean;
 };
 
 export const SearchInput: React.FC<SearchInputProps> = ({
@@ -12,6 +13,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
   onSearch,
   value,
   placeholder = "",
+  disabled = false,
 }: SearchInputProps) => {
   return (
     <div className="max-w-md mx-auto">
@@ -25,6 +27,7 @@ export const SearchInput: React.FC<SearchInputProps> = ({
           placeholder={placeholder}
         />
         <button
+          disabled={disabled}
           onClick={onSearch}
           onKeyPress={(e) => {
             if (e.key === "Enter") {

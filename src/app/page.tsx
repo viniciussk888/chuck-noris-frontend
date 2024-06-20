@@ -12,13 +12,16 @@ import {
 import { Card } from "./components/card";
 import { LanguageSelect } from "./components/select/language";
 import useTranslation from "./hooks/useTranslation";
+import { CardSkeleton } from "./components/skeleton/card";
+import { RowSkeleton } from "./components/skeleton/row";
 
 export default function Home() {
   const { t } = useTranslation();
   const [search, setSearch] = useState("");
   const [categories, setCategories] = useState<string[]>([]);
   const [selectedCategory, setSelectedCategory] = useState<string>("");
-  const [joke, setJoke] = useState<Joke[] | null>(null);
+  const [joke, setJoke] = useState<Joke[]>([]);
+  const [fetching, setFetching] = useState<boolean>(true);
 
   const fetchCategories = async () => {
     try {
@@ -35,6 +38,8 @@ export default function Home() {
       setJoke([response]);
     } catch (error: any) {
       console.error(error);
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -44,11 +49,14 @@ export default function Home() {
   }, []);
 
   const fetchJokeByCategory = async (category: string) => {
+    setFetching(true);
     try {
       const response = await GetJokeByCategory(category);
       setJoke([response]);
     } catch (error: any) {
       console.error(error);
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -62,10 +70,13 @@ export default function Home() {
       return;
     }
     try {
+      setFetching(true);
       const response = await GetJokeBySearch(search);
       setJoke(response.result);
     } catch (error: any) {
       console.error(error);
+    } finally {
+      setFetching(false);
     }
   };
 
@@ -86,7 +97,7 @@ export default function Home() {
         <h1 className="flex items-center text-6xl font-extrabold dark:text-white mt-4">
           Chuck Norris
           <span className="bg-blue-100 text-blue-800 text-2xl font-semibold me-2 px-2.5 py-0.5 rounded dark:bg-blue-200 dark:text-blue-800 ms-2">
-          {t("subtitle")}
+            {t("subtitle")}
           </span>
         </h1>
       </div>
@@ -96,27 +107,34 @@ export default function Home() {
           onChange={(value: string) => setSearch(value)}
           onSearch={handleSearch}
           placeholder={t("search-placeholder")}
+          disabled={fetching}
         />
       </div>
-      <h2 className="text-1xl font-semibold mt-4">{t("categories-label")}</h2>
-      <div className="flex items-center flex-row w-full sm:w-6/12 mt-4 flex-wrap">
-        {categories.map((category) => (
-          <Badge
-            onClick={() => handleClickCategory(category)}
-            key={category}
-            text={t(category)}
-            active={selectedCategory === category}
-          />
-        ))}
+      <h2 className="text-1xl font-semibold mt-4 mb-4">
+        {t("categories-label")}
+      </h2>
+      {fetching && <RowSkeleton />}
+      <div className="flex items-center flex-row w-full sm:w-6/12 mt-4 flex-wrap mb-4">
+        {!fetching &&
+          categories.map((category) => (
+            <Badge
+              onClick={() => handleClickCategory(category)}
+              key={category}
+              text={t(category)}
+              active={selectedCategory === category}
+            />
+          ))}
       </div>
-      <div className="mt-4 grid grid-cols-1 gap-4 lg:grid-cols-3">
-        {joke?.map((jokeItem) => (
-          <Card
-            key={jokeItem.id}
-            joke={jokeItem}
-            col={joke.length > 1 ? 1 : 3}
-          />
-        ))}
+      <div className="flex items-center flex-row w-100">
+        {fetching && <CardSkeleton />}
+      </div>
+      <div
+        className={`mt-4 grid grid-cols-1 gap-4 lg:grid-cols-${
+          joke.length > 1 ? "3" : "1"
+        }`}
+      >
+        {!fetching &&
+          joke?.map((jokeItem) => <Card key={jokeItem.id} joke={jokeItem} />)}
       </div>
     </main>
   );
